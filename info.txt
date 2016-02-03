@@ -1,0 +1,8 @@
+
+Choose a folder with DICOM files. If the folder contain subfolders both subfolders and files can be renamed.
+
+Select from the list to create name-templates.
+
+WARNING: The subfolders are named based solely on the information in the first DICOM file found in that subfolder.
+
+
