@@ -1,4 +1,4 @@
-Enter file contents here;modified by Ellen Wasbo 2014 to add multiple list selection ( and previously changed to set position of modal on screen)
+;modified by Ellen Wasbo 2014 to add multiple list selection ( and previously changed to set position of modal on screen)
 ; $Id: cw_form.pro,v 1.35 2005/02/01 20:24:18 scottm Exp $
 ;
 ; Copyright (c) 1995-2005, Research Systems, Inc.  All rights reserved.
