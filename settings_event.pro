@@ -29,6 +29,7 @@ pro settings_event, event
         '2, BUTTON, Save, QUIT, TAG=Save']
       res=CW_FORM_2(box, /COLUMN, TAB_MODE=1, TITLE='Use or save?', XSIZE=250, YSIZE=100, FOCUSNO=1)
       tempElements=TRANSPOSE(tblNew[0,*])
+      tagGroups=UINT(tagGroups) & tagElements=UINT(tagElements); problem if high numbered tags, int gets negative
       groups=TRANSPOSE(tblNew[1,*])
       READS, groups, tagGroups, FORMAT='(Z)'
       elements=TRANSPOSE(tblNew[2,*])

@@ -28,7 +28,7 @@ tblElem=WIDGET_TABLE(bTbl, VALUE=tblContent, XSIZE=3, YSIZE=13, SCR_XSIZE=300, C
 bButtons=WIDGET_BASE(settingsbox, /ROW)
 lblBtns=WIDGET_LABEL(bButtons, VALUE='', XSIZE=250)
 btnCancelSett=WIDGET_BUTTON(bButtons, VALUE='Cancel', UVALUE='s_cancel', XSIZE=50)
-btnSaveSett=WIDGET_BUTTON(bButtons, VALUE='Use or save and Close', UVALUE='s_save', XSIZE=100)
+btnSaveSett=WIDGET_BUTTON(bButtons, VALUE='Use/save and Close', UVALUE='s_save', XSIZE=110)
 
 WIDGET_CONTROL, settingsbox, /REALIZE
 XMANAGER, 'settings', settingsbox
