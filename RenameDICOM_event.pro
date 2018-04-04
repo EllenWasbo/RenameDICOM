@@ -121,12 +121,13 @@ function getUniqPaths, origPaths,newPaths,pathType
   IF N_ELEMENTS(u) NE N_ELEMENTS(modNewPaths) THEN BEGIN
     FOR i=0, N_ELEMENTS(modNewPaths)-1 DO BEGIN
       eqPaths=WHERE(modNewPaths EQ modNewPaths(i), nP)
-
-      IF nP GT 1 THEN BEGIN
-        FOR j=0, nP-1 DO BEGIN
-          IF pathType EQ 1 THEN modNewPaths(eqPaths(j))= FILE_DIRNAME(modNewPaths(eqPaths(j)))+'\'+FILE_BASENAME(modNewPaths(eqPaths(j))) + '_' + STRING(j, FORMAT='(i02)')+'\' $
-          ELSE modNewPaths(eqPaths(j))= FILE_DIRNAME(modNewPaths(eqPaths(j)))+'\'+FILE_BASENAME(modNewPaths(eqPaths(j)),'.dcm')+'_'+STRING(j, FORMAT='(i03)')+'.dcm'
-        ENDFOR
+      IF modNewPaths(i) NE '' THEN BEGIN
+        IF nP GT 1 THEN BEGIN
+          FOR j=0, nP-1 DO BEGIN
+            IF pathType EQ 1 THEN modNewPaths(eqPaths(j))= FILE_DIRNAME(modNewPaths(eqPaths(j)))+'\'+FILE_BASENAME(modNewPaths(eqPaths(j))) + '_' + STRING(j, FORMAT='(i02)')+'\' $
+            ELSE modNewPaths(eqPaths(j))= FILE_DIRNAME(modNewPaths(eqPaths(j)))+'\'+FILE_BASENAME(modNewPaths(eqPaths(j)),'.dcm')+'_'+STRING(j, FORMAT='(i03)')+'.dcm'
+          ENDFOR
+        ENDIF
       ENDIF
     ENDFOR
   ENDIF
@@ -204,7 +205,7 @@ pro RenameDICOM_event, event
         WIDGET_CONTROL, fileTemplate, SET_VALUE=stringTemps(1)
         catTemp=structTemp.(event.index+1).CatElem
         fileTemp=structTemp.(event.index+1).FileElem
-        formatElements=structTemp.(event.index+1).Formats
+        formTemp=structTemp.(event.index+1).Formats
         selNo=WIDGET_INFO(lstNameElement, /LIST_SELECT)
         IF selNo NE -1 THEN WIDGET_CONTROL, txtFormat, SET_VALUE=STRMID(formatElements(selNo), 1, strlen(formatElements(selNo))-2)
       END
@@ -218,7 +219,7 @@ pro RenameDICOM_event, event
           '1, BASE,, /ROW', $
           '0, BUTTON, Overwrite, QUIT, TAG=Overwrite',$
           '2, BUTTON, New, QUIT, TAG=New']
-        res=CW_FORM_2(box, /COLUMN, TAB_MODE=1, TITLE='Owerwrite or new?', XSIZE=250, YSIZE=100, FOCUSNO=1)
+        res=CW_FORM_2(box, /COLUMN, TAB_MODE=1, TITLE='Owerwrite or new?', XSIZE=260, YSIZE=100, FOCUSNO=1)
 
         IF res.Overwrite THEN BEGIN
           newTemp=0
@@ -439,6 +440,11 @@ pro RenameDICOM_event, event
   ;******************* Perform rename of catalogues or files ? ***********************
   IF N_ELEMENTS(rename) NE 0 THEN BEGIN
     IF rename EQ 1 THEN BEGIN
+
+      ;empty?
+      NotEmp=WHERE(newPaths NE '')
+      newPaths=newPaths(NotEmp)
+      origPaths=origPaths(NotEmp)
 
       ;unique names?
       modPaths=getUniqPaths(origPaths,newPaths,pathType)

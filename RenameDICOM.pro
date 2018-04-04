@@ -26,7 +26,9 @@ COMMON VAR, tblAdr, txtCat, txtFormat, lstNameElement, lstTemplate, btnRename,lb
   tempNames=STRARR(nTemp)
   FOR i=0, nTemp-1 DO tempNames(i)=structTemp.(i+1).name 
 
-  bMain = WIDGET_BASE(TITLE='Rename DICOM files and folders', MBAR=bar, /COLUMN, XSIZE=950, YSIZE=850, XOFFSET=50, YOFFSET=50,/TLB_KILL_REQUEST_EVENTS)
+font1="Arial*15"
+
+  bMain = WIDGET_BASE(TITLE='RenameDICOM v1.001', MBAR=bar, /COLUMN, XSIZE=1050, YSIZE=900, XOFFSET=50, YOFFSET=20,/TLB_KILL_REQUEST_EVENTS)
   
   ;menu
   file_menu=WIDGET_BUTTON(bar, VALUE='File', /MENU)
@@ -38,32 +40,32 @@ COMMON VAR, tblAdr, txtCat, txtFormat, lstNameElement, lstTemplate, btnRename,lb
 
   ;Name templates
   lblInfoName=WIDGET_LABEL(bMain,VALUE='Name format', FONT="Arial*Bold*18")
-  bNameConstruct=WIDGET_BASE(bMAin, /COLUMN, FRAME=1, XSIZE=950, YSIZE=190)
+  bNameConstruct=WIDGET_BASE(bMAin, /COLUMN, FRAME=1, XSIZE=1000, YSIZE=220)
   
   bNC2=WIDGET_BASE(bNameConstruct, /ROW)
 
-  lstNameElement=WIDGET_LIST(bNC2, VALUE=tempElements, UVALUE='lstNameElement', SCR_YSIZE=180)
+  lstNameElement=WIDGET_LIST(bNC2, VALUE=tempElements, UVALUE='lstNameElement', SCR_YSIZE=200, FONT=font1)
   
   bNCcol=WIDGET_BASE(bNC2, /COLUMN)
   
   bTemplate=WIDGET_BASE(bNCcol, /ROW)
-  lblTemplate=WIDGET_LABEL(bTemplate, VALUE='Select template:')
-  lstTemplate=WIDGET_DROPLIST(bTemplate, VALUE=tempNames, UVALUE='lstTemplate', XSIZE=100)
+  lblTemplate=WIDGET_LABEL(bTemplate, VALUE='Select template:', FONT=font1)
+  lstTemplate=WIDGET_DROPLIST(bTemplate, VALUE=tempNames, UVALUE='lstTemplate', XSIZE=100, FONT=font1)
   btnSaveTemplate=WIDGET_BUTTON(bTemplate, VALUE='save.bmp', /BITMAP, TOOLTIP='Save current Name formats as template', UVALUE='saveTemp')
   btnDelTemplate=WIDGET_BUTTON(bTemplate, VALUE='delete.bmp', /BITMAP, TOOLTIP='Delete selected template', UVALUE='delTemp')
   
-  lblInfoName=WIDGET_LABEL(bNCcol,VALUE='Double-click on element in the list to add element to the name template.', /ALIGN_LEFT)
+  lblInfoName=WIDGET_LABEL(bNCcol,VALUE='Double-click on element in the list to add element to the name template.', /ALIGN_LEFT, FONT=font1)
 
   bNCrow=WIDGET_BASE(bNCcol, /ROW)
-  defCatOrFile=CW_BGROUP(bNCrow, ['Subfolder name','File name'], UVALUE='defCatOrFile', SET_VALUE=0, /COLUMN, /EXCLUSIVE, /RETURN_INDEX)
+  defCatOrFile=CW_BGROUP(bNCrow, ['Subfolder name','File name'], UVALUE='defCatOrFile', SET_VALUE=0, /COLUMN, /EXCLUSIVE, /RETURN_INDEX, FONT=font1)
   bStrings=WIDGET_BASE(bNCrow, /COLUMN)
   bStringsCat=WIDGET_BASE(bStrings, /ROW)
   bStringsFile=WIDGET_BASE(bStrings, /ROW)
   
-  catTemplate=WIDGET_TEXT(bStringsCat, VALUE=catStringTemplate, SCR_XSIZE=650, XSIZE=200)
-  fileTemplate=WIDGET_TEXT(bStringsFile, VALUE=fileStringTemplate, SCR_XSIZE=650, XSIZE=200)
-  btnCatEmpty=WIDGET_BUTTON(bStringsCat, VALUE='<-', UVALUE='catPop', TOOLTIP='Remove last element from name format')
-  btnFileEmpty=WIDGET_BUTTON(bStringsFile, VALUE='<-', UVALUE='filePop', TOOLTIP='Remove last element from name format')
+  catTemplate=WIDGET_TEXT(bStringsCat, VALUE=catStringTemplate, SCR_XSIZE=650, XSIZE=200, FONT=font1)
+  fileTemplate=WIDGET_TEXT(bStringsFile, VALUE=fileStringTemplate, SCR_XSIZE=650, XSIZE=200, FONT=font1)
+  btnCatEmpty=WIDGET_BUTTON(bStringsCat, VALUE='<<', UVALUE='catPop', TOOLTIP='Remove last element from name format', FONT="Arial*18")
+  btnFileEmpty=WIDGET_BUTTON(bStringsFile, VALUE='<<', UVALUE='filePop', TOOLTIP='Remove last element from name format', FONT="Arial*18")
   
   i=structTemp.(0).selDefault
   stringTemps=stringOfTemplate(structTemp, i, tempElements)
@@ -74,21 +76,25 @@ COMMON VAR, tblAdr, txtCat, txtFormat, lstNameElement, lstTemplate, btnRename,lb
   
   ;Format coding
   bFormat=WIDGET_BASE(bNCcol, /ROW)
-  lblFormat=WIDGET_LABEL(bFormat, VALUE='IDL format code for selected element in list:')
-  txtFormat=WIDGET_TEXT(bFormat, VALUE='',/EDITABLE)
-  btnFormat=WIDGET_BUTTON(bFormat, VALUE='Apply', UVALUE='applyFormat')
-  lblFormatInfo=WIDGET_LABEL(bFormat, VALUE='Text: a<#letters or 0=all>, Integer: i<#digits>, Float: f<#integer digits>.<#decimals>')
+  lblFormat=WIDGET_LABEL(bFormat, VALUE='IDL format code for selected element in list:', FONT=font1)
+  txtFormat=WIDGET_TEXT(bFormat, VALUE='',/EDITABLE, FONT=font1)
+  btnFormat=WIDGET_BUTTON(bFormat, VALUE='Apply', UVALUE='applyFormat', FONT=font1)
+  lblFormatInfo=WIDGET_LABEL(bFormat, VALUE='Text: a<#letters, 0=all>, Integer: i<#digits>, Float: f<#digits>.<#decimals>', FONT=font1)
   
   lblMlm=WIDGET_LABEL(bMain, VALUE='', YSIZE=20)
   
+  ;browse
   bBrowse=WIDGET_BASE(bMain, /ROW, XSIZE=900, SCR_XSIZE=500)
   lblCat=WIDGET_LABEL(bBrowse, VALUE='Selected folder: ', FONT="Arial*Bold*18")
-  txtCat=WIDGET_TEXT(bBrowse, XSIZE=87)
-  btnBrowse=WIDGET_BUTTON(bBrowse, VALUE='Browse',UVALUE='browse', XSIZE=50)
-  btnPutAllinOne=WIDGET_BUTTON(bBrowse, VALUE='Move all files in subfolders to selected folder', UVALUE='putAllinOne')
+  txtCat=WIDGET_TEXT(bBrowse, XSIZE=100)
+  btnBrowse=WIDGET_BUTTON(bBrowse, VALUE='Browse',UVALUE='browse', XSIZE=50, FONT=font1)
   
+  bFileActions=WIDGET_BASE(bMain, /ROW, XSIZE=300)
+  btnPutAllinOne=WIDGET_BUTTON(bFileActions, VALUE='Move all files in subfolders to selected folder', UVALUE='putAllinOne', FONT=font1, XSIZE=300)
+
   lblMlm2=WIDGET_LABEL(bMain, VALUE='', YSIZE=20)
   
+  ;table
   bTable=WIDGET_BASE(bMain, /ROW)
   mlmTbl=WIDGET_LABEL(bTable, VALUE='', XSIZE=70)
   rownames=['Original name', 'Suggested name']
@@ -96,12 +102,12 @@ COMMON VAR, tblAdr, txtCat, txtFormat, lstNameElement, lstTemplate, btnRename,lb
   lblMl3=WIDGET_LABEL(bTable, VALUE='', XSIZE=50)
   bSide=WIDGET_BASE(bTable, /COLUMN)
   lblS=WIDGET_LABEL(bSide, VALUe='', YSIZE=50)
-  btnViewFirstCat=WIDGET_BUTTON(bSide, VALUE='Test 10 first', UVALUE='firstFolders')
-  btnUpdateName = WIDGET_BUTTON(bSide, VALUE='Generate names', UVALUE='update')
-  btnRename = WIDGET_BUTTON(bSide, VALUE='Rename', SENSITIVE=0, XSIZE=80, UVALUE='rename')
+  btnViewFirstCat=WIDGET_BUTTON(bSide, VALUE='Test 10 first', UVALUE='firstFolders', FONT=font1)
+  btnUpdateName = WIDGET_BUTTON(bSide, VALUE='Generate names', UVALUE='update', FONT=font1)
+  btnRename = WIDGET_BUTTON(bSide, VALUE='Rename', SENSITIVE=0, XSIZE=80, UVALUE='rename', FONT=font1)
   
   bBottom=WIDGET_BASE(bMain, /row, XSIZE=950)
-  lblStatus = WIDGET_LABEL(bBottom, VALUE='Status:', SCR_XSIZE=950, XSIZE=650, FRAME=1, /DYNAMIC_RESIZE)
+  lblStatus = WIDGET_LABEL(bBottom, VALUE='Status:', SCR_XSIZE=950, XSIZE=650, FRAME=1, /DYNAMIC_RESIZE, FONT=font1)
 
   WIDGET_CONTROL, bMain, /REALIZE 
   XMANAGER, 'RenameDICOM', bMain 
