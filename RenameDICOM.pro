@@ -28,7 +28,7 @@ COMMON VAR, tblAdr, txtCat, txtFormat, lstNameElement, lstTemplate, btnRename,lb
 
 font1="Arial*15"
 
-  bMain = WIDGET_BASE(TITLE='RenameDICOM v1.001', MBAR=bar, /COLUMN, XSIZE=1050, YSIZE=900, XOFFSET=50, YOFFSET=20,/TLB_KILL_REQUEST_EVENTS)
+  bMain = WIDGET_BASE(TITLE='RenameDICOM v1.002', MBAR=bar, /COLUMN, XSIZE=900, YSIZE=900, XOFFSET=50, YOFFSET=20,/TLB_KILL_REQUEST_EVENTS)
   
   ;menu
   file_menu=WIDGET_BUTTON(bar, VALUE='File', /MENU)
@@ -40,7 +40,7 @@ font1="Arial*15"
 
   ;Name templates
   lblInfoName=WIDGET_LABEL(bMain,VALUE='Name format', FONT="Arial*Bold*18")
-  bNameConstruct=WIDGET_BASE(bMAin, /COLUMN, FRAME=1, XSIZE=1000, YSIZE=220)
+  bNameConstruct=WIDGET_BASE(bMAin, /COLUMN, FRAME=1, XSIZE=880, YSIZE=220)
   
   bNC2=WIDGET_BASE(bNameConstruct, /ROW)
 
@@ -62,8 +62,8 @@ font1="Arial*15"
   bStringsCat=WIDGET_BASE(bStrings, /ROW)
   bStringsFile=WIDGET_BASE(bStrings, /ROW)
   
-  catTemplate=WIDGET_TEXT(bStringsCat, VALUE=catStringTemplate, SCR_XSIZE=650, XSIZE=200, FONT=font1)
-  fileTemplate=WIDGET_TEXT(bStringsFile, VALUE=fileStringTemplate, SCR_XSIZE=650, XSIZE=200, FONT=font1)
+  catTemplate=WIDGET_TEXT(bStringsCat, VALUE=catStringTemplate, SCR_XSIZE=500, XSIZE=200, FONT=font1)
+  fileTemplate=WIDGET_TEXT(bStringsFile, VALUE=fileStringTemplate, SCR_XSIZE=500, XSIZE=200, FONT=font1)
   btnCatEmpty=WIDGET_BUTTON(bStringsCat, VALUE='<<', UVALUE='catPop', TOOLTIP='Remove last element from name format', FONT="Arial*18")
   btnFileEmpty=WIDGET_BUTTON(bStringsFile, VALUE='<<', UVALUE='filePop', TOOLTIP='Remove last element from name format', FONT="Arial*18")
   
@@ -79,35 +79,36 @@ font1="Arial*15"
   lblFormat=WIDGET_LABEL(bFormat, VALUE='IDL format code for selected element in list:', FONT=font1)
   txtFormat=WIDGET_TEXT(bFormat, VALUE='',/EDITABLE, FONT=font1)
   btnFormat=WIDGET_BUTTON(bFormat, VALUE='Apply', UVALUE='applyFormat', FONT=font1)
-  lblFormatInfo=WIDGET_LABEL(bFormat, VALUE='Text: a<#letters, 0=all>, Integer: i<#digits>, Float: f<#digits>.<#decimals>', FONT=font1)
+  lblFormatInfo=WIDGET_LABEL(bNCcol, VALUE='Text: a<#letters, 0=all>, Integer: i<#digits>, Float: f<#digits>.<#decimals>', FONT=font1)
   
   lblMlm=WIDGET_LABEL(bMain, VALUE='', YSIZE=20)
   
   ;browse
-  bBrowse=WIDGET_BASE(bMain, /ROW, XSIZE=900, SCR_XSIZE=500)
+  bBrowse=WIDGET_BASE(bMain, /ROW, XSIZE=500, SCR_XSIZE=450)
   lblCat=WIDGET_LABEL(bBrowse, VALUE='Selected folder: ', FONT="Arial*Bold*18")
   txtCat=WIDGET_TEXT(bBrowse, XSIZE=100)
   btnBrowse=WIDGET_BUTTON(bBrowse, VALUE='Browse',UVALUE='browse', XSIZE=50, FONT=font1)
   
   bFileActions=WIDGET_BASE(bMain, /ROW, XSIZE=300)
   btnPutAllinOne=WIDGET_BUTTON(bFileActions, VALUE='Move all files in subfolders to selected folder', UVALUE='putAllinOne', FONT=font1, XSIZE=300)
+  btnPutSeriesInFolders=WIDGET_BUTTON(bFileActions, VALUE='Sort files into subfolders of same seriesnumber', UVALUE='putSeriesFolder', TOOLTIP='Put all files with same seriesnumber into folder named <seriesnumber>', FONT=font1, XSIZE=300)
 
   lblMlm2=WIDGET_LABEL(bMain, VALUE='', YSIZE=20)
   
   ;table
   bTable=WIDGET_BASE(bMain, /ROW)
-  mlmTbl=WIDGET_LABEL(bTable, VALUE='', XSIZE=70)
+  mlmTbl=WIDGET_LABEL(bTable, VALUE='', XSIZE=20)
   rownames=['Original name', 'Suggested name']
   tblAdr = WIDGET_TABLE(bTable, SCR_XSIZE=700, XSIZE=2, YSIZE=200, SCR_YSIZE=500, /NO_ROW_HEADERS, column_widths=[350,350], column_labels=rownames, ALIGNMENT=1)
-  lblMl3=WIDGET_LABEL(bTable, VALUE='', XSIZE=50)
+  lblMl3=WIDGET_LABEL(bTable, VALUE='', XSIZE=20)
   bSide=WIDGET_BASE(bTable, /COLUMN)
-  lblS=WIDGET_LABEL(bSide, VALUe='', YSIZE=50)
+  lblS=WIDGET_LABEL(bSide, VALUe='', YSIZE=20)
   btnViewFirstCat=WIDGET_BUTTON(bSide, VALUE='Test 10 first', UVALUE='firstFolders', FONT=font1)
   btnUpdateName = WIDGET_BUTTON(bSide, VALUE='Generate names', UVALUE='update', FONT=font1)
   btnRename = WIDGET_BUTTON(bSide, VALUE='Rename', SENSITIVE=0, XSIZE=80, UVALUE='rename', FONT=font1)
   
   bBottom=WIDGET_BASE(bMain, /row, XSIZE=950)
-  lblStatus = WIDGET_LABEL(bBottom, VALUE='Status:', SCR_XSIZE=950, XSIZE=650, FRAME=1, /DYNAMIC_RESIZE, FONT=font1)
+  lblStatus = WIDGET_LABEL(bBottom, VALUE='Status:', SCR_XSIZE=700, XSIZE=700, FRAME=1, /DYNAMIC_RESIZE, FONT=font1)
 
   WIDGET_CONTROL, bMain, /REALIZE 
   XMANAGER, 'RenameDICOM', bMain 

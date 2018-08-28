@@ -55,7 +55,7 @@ end
 
 function newCatName, path, tgroups, telements, formatTemp
   newpath=''
-  Spawn, 'dir '  + '"'+path+'"' + '*'+ '/b /a-d', res; files only,may not work in standalone version (makeRT)
+  Spawn, 'dir '  + '"'+path+'"' + '*'+ '/b /a-d', res; files only
 
   IF res(0) NE '' THEN BEGIN
     res=path+res(sort(res))
@@ -306,8 +306,9 @@ pro RenameDICOM_event, event
         ;update=1
       END
       'putAllinOne':BEGIN
+        WIDGET_CONTROL, /HOURGLASS
         WIDGET_CONTROL, txtCat, GET_VALUE=adr
-        Spawn, 'dir '  + '"'+adr(0)+'\"' + '*'+ '/b /s', res; both files and directories
+        Spawn, 'dir '  + '"'+adr+'"' + '*'+ '/b /s', res; files only
         origPaths=res(sort(res))
         IF origPaths(0) NE '' THEN BEGIN
           nnn=N_ELEMENTS(origPaths)
@@ -315,7 +316,8 @@ pro RenameDICOM_event, event
           FOR i =0,nnn-1 DO BEGIN
             resFI=FILE_INFO(origPaths(i))
             IF resFI.DIRECTORY EQ 1 THEN origPaths(i)='' ELSE BEGIN
-              dcm=QUERY_DICOM(origPaths(i))
+              
+              IF FILE_BASENAME(origPaths(i)) EQ 'DICOMDIR' THEN dcm=0 ELSE dcm=QUERY_DICOM(origPaths(i))
               IF dcm EQ 0 THEN BEGIN
                 origPaths(i)=''
               ENDIF ELSE BEGIN
@@ -347,6 +349,47 @@ pro RenameDICOM_event, event
           sv=DIALOG_MESSAGE('All DICOM files in the subfolders ('+STRING(nFiles, FORMAT='(i0)')+') are now moved to the parent folder.')
         ENDIF
       END
+      'putSeriesFolder': BEGIN
+        WIDGET_CONTROL, /HOURGLASS
+        WIDGET_CONTROL, txtCat, GET_VALUE=adr
+        Spawn, 'dir '  + '"'+adr(0)+'\"' + '*'+ '/b /s', res; both files and directories
+        origPaths=res(sort(res))
+        IF origPaths(0) NE '' THEN BEGIN
+          nnn=N_ELEMENTS(origPaths)
+          ;find all dicom files
+          FOR i =0,nnn-1 DO BEGIN
+              IF FILE_BASENAME(origPaths(i)) EQ 'DICOMDIR' THEN dcm = 0 ELSE dcm=QUERY_DICOM(origPaths(i))
+              IF dcm EQ 0 THEN origPaths(i)=''
+          ENDFOR
+
+          notEmpty=WHERE(origPaths NE '')
+          origPaths2=origPaths(notEmpty)
+          origPaths=origPaths2
+          nFiles=N_ELEMENTS(origPaths)
+          newPaths=origPaths & newPaths[*]=''
+          
+          subFs=''
+
+          for i=0, nFiles-1 do begin
+            WIDGET_CONTROL, lblStatus, SET_VALUE='Preparing files for subfolders... '+STRING(i+1,FORMAT='(i0)')+' / '+STRING(nFiles, FORMAT='(i0)')
+            o=obj_new('idlffdicom')
+            t=o->read(origPaths(i))
+            
+            test=o->GetReference('0020'x,'0011'x)
+            test_peker=o->GetValue(REFERENCE=test[0],/NO_COPY)
+            seriesNmb=LONG(*(test_peker[0]))
+            
+            subFolder=STRING(seriesNmb, FORMAT='(i6)')+'\'
+            IF ~subFs.HasValue(subFolder) THEN FILE_MKDIR, adr(0)+ subFolder
+            tempname=adr(0)+ subFolder + FILE_BASENAME(origPaths(i))
+            newPaths(i)=tempname
+          endfor
+
+          for i=0, nFiles-1 do IF origPaths(i) NE '' THEN file_move, origPaths(i), newPaths(i)
+
+          sv=DIALOG_MESSAGE('All DICOM files in the selected folder are now moved to subfolders named by the seriesnumber.')
+        ENDIF
+        END
       'firstFolders':update=10
       'update':update=1
       'rename':rename=1
